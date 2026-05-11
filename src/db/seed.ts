@@ -37,12 +37,15 @@ async function main() {
   });
 
   // ── Sample products ────────────────────────────────────────────────────────
-  // Clear old products before re-seeding so removed slugs don't linger
-  await prisma.product.deleteMany({});
-  console.log('[seed] Cleared existing products.');
+  // Only seed if no products exist (safe for repeated runs)
+  const productCount = await prisma.product.count();
+  if (productCount > 0) {
+    console.log('[seed] Products already exist, skipping product seeding.');
+  } else {
+    console.log('[seed] Seeding products...');
 
-  // Note: price uses Decimal — never Float — to match DECIMAL(12,2) in DB
-  const products = [
+    // Note: price uses Decimal — never Float — to match DECIMAL(12,2) in DB
+    const products = [
     {
       name: 'Florist CRM Suite',
       slug: 'florist-crm-suite',
@@ -85,13 +88,14 @@ async function main() {
     },
   ];
 
-  for (const p of products) {
-    await prisma.product.upsert({
-      where: { slug: p.slug },
-      update: { name: p.name, price: p.price, description: p.description, images: p.images, stock: p.stock },
-      create: p,
-    });
-    console.log(`[seed] Product: ${p.name} (€${p.price})`);
+    for (const p of products) {
+      await prisma.product.upsert({
+        where: { slug: p.slug },
+        update: { name: p.name, price: p.price, description: p.description, images: p.images, stock: p.stock },
+        create: p,
+      });
+      console.log(`[seed] Product: ${p.name} (€${p.price})`);
+    }
   }
 
   console.log('[seed] Done.');
