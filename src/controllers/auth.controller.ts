@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { AuthService } from '../services/auth.service';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { AppError } from '../middleware/error.middleware';
@@ -121,10 +121,11 @@ export const autologin = async (req: Request, res: Response, next: NextFunction)
     if (!user) throw new AppError(401, 'User not found');
 
     // Issue real session tokens
+    const signOptions: SignOptions = { expiresIn: config.jwt.expiresIn as any };
     const accessToken = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
+      signOptions
     );
     const crypto = await import('crypto');
     const refreshToken = crypto.randomBytes(40).toString('hex');

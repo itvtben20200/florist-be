@@ -42,12 +42,12 @@ export const startWorkers = () => {
         name,
         phone: order.user?.phone || undefined,
         orderId: order.id,
-        orderTotal: order.total,
+        orderTotal: order.total.toNumber(),
         orderDate: order.createdAt.toISOString(),
         items: order.items.map((i) => ({
           name: i.product.name,
           quantity: i.quantity,
-          price: i.price,
+          price: i.price.toNumber(),
         })),
       });
 

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import crypto from 'crypto';
 import { prisma } from '../lib/prisma';
 import { config } from '../config';
@@ -44,10 +44,11 @@ export class AuthService {
       throw new AppError(401, 'Invalid or expired refresh token');
     }
 
+    const signOptions: SignOptions = { expiresIn: config.jwt.expiresIn as any };
     const accessToken = jwt.sign(
       { userId: session.user.id, email: session.user.email, role: session.user.role },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
+      signOptions
     );
     return { accessToken };
   }
@@ -115,9 +116,8 @@ export class AuthService {
   }
 
   private async generateTokens(userId: string, email: string, role: string) {
-    const accessToken = jwt.sign({ userId, email, role }, config.jwt.secret, {
-      expiresIn: config.jwt.expiresIn,
-    });
+    const signOptions: SignOptions = { expiresIn: config.jwt.expiresIn as any };
+    const accessToken = jwt.sign({ userId, email, role }, config.jwt.secret, signOptions);
     const refreshToken = crypto.randomBytes(40).toString('hex');
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 

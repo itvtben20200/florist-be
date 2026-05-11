@@ -36,7 +36,7 @@ export class OrderService {
 
     const orderItems = items.map((item) => {
       const product = products.find((p) => p.id === item.productId)!;
-      return { productId: item.productId, quantity: item.quantity, price: product.price };
+      return { productId: item.productId, quantity: item.quantity, price: product.price.toNumber() };
     });
 
     const subtotal = orderItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -63,18 +63,18 @@ export class OrderService {
     const emailItems = order.items.map((i) => ({
       name: i.product.name,
       quantity: i.quantity,
-      price: i.price,
+      price: i.price.toNumber(),
     }));
 
     Promise.all([
       emailService.sendOrderConfirmation(recipientEmail, {
         id: order.id,
-        total: order.total,
+        total: order.total.toNumber(),
         items: emailItems,
       }),
       emailService.sendAdminNewOrder({
         id: order.id,
-        total: order.total,
+        total: order.total.toNumber(),
         guestEmail: order.guestEmail,
         userName: order.user?.name,
       }),
