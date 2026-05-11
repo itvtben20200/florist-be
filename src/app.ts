@@ -16,7 +16,11 @@ app.set('trust proxy', 1);
 
 // ── Security ───────────────────────────────────────────────────────────────
 app.use(helmet());
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+// In development, allow both 3000 and 3001 (Next.js auto-picks available port)
+const allowedOrigins = config.nodeEnv === 'development'
+  ? ['http://localhost:3000', 'http://localhost:3001']
+  : config.frontendUrl;
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // ── Global rate limit ──────────────────────────────────────────────────────
 app.use(
