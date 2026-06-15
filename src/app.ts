@@ -34,14 +34,17 @@ app.use(
 );
 
 // ── Auth routes get stricter rate limiting ─────────────────────────────────
-app.use(
-  '/api/auth',
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 20,
-    message: { error: 'Too many requests, please try again later.' },
-  })
-);
+// Skip in test mode so automated test suites don't exhaust the 20-req/15min quota
+if (config.nodeEnv !== 'test') {
+  app.use(
+    '/api/auth',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 20,
+      message: { error: 'Too many requests, please try again later.' },
+    })
+  );
+}
 
 // ── Body parsing ───────────────────────────────────────────────────────────
 // Stripe webhooks require raw body — must be registered before json()
