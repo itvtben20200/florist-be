@@ -37,65 +37,87 @@ async function main() {
   });
 
   // ── Sample products ────────────────────────────────────────────────────────
-  // Only seed if no products exist (safe for repeated runs)
-  const productCount = await prisma.product.count();
-  if (productCount > 0) {
-    console.log('[seed] Products already exist, skipping product seeding.');
-  } else {
-    console.log('[seed] Seeding products...');
+  // ── Remove legacy/duplicate product slugs ──────────────────────────────────
+  // 'Managed SOC' was previously seeded as 'Managed SOC (Security Operations Center)'
+  // with one of these slugs. Delete any orphaned rows so the homepage doesn't show duplicates.
+  const legacySocSlugs = [
+    'soc-security-operations-center',
+    'managed-soc-security-operations-center',
+    'managed-soc-soc',
+  ];
+  await prisma.product.deleteMany({ where: { slug: { in: legacySocSlugs } } });
+  console.log('[seed] Removed legacy SOC product slugs (if any).');
 
-    // Note: price uses Decimal — never Float — to match DECIMAL(12,2) in DB
-    const products = [
+  // ── Upsert products (safe for repeated runs — always syncs slugs/prices/stock)
+  console.log('[seed] Seeding products...');
+
+  // Note: price uses Decimal — never Float — to match DECIMAL(12,2) in DB
+  const products = [
     {
-      name: 'Florist CRM Suite',
-      slug: 'florist-crm-suite',
+      name: 'Florist Core',
+      slug: 'florist-core',
       price: new Decimal('299.00'),
       stock: 999,
-      description: 'All-in-one CRM platform for small businesses. Manage leads, deals, and customer communication in one place. Includes email sync, pipeline tracking, and reporting dashboards.',
+      description: 'The complete operating system for your flower shop. Unified order management, real-time inventory, recurring subscriptions, built-in analytics, and team management — all in one platform.',
       images: ['https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80'],
     },
     {
-      name: 'Analytics Pro',
-      slug: 'analytics-pro',
-      price: new Decimal('199.00'),
+      name: 'Daily Close Agent',
+      slug: 'daily-close-agent',
+      price: new Decimal('99.00'),
       stock: 999,
-      description: 'Business intelligence platform with real-time dashboards, KPI tracking, and automated reports. Connect your data sources and get actionable insights instantly.',
+      description: 'Automated end-of-day reconciliation — finished before you lock up. Pulls data from POS, payment processors, and online orders to produce a clean daily close report automatically.',
       images: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80'],
     },
     {
-      name: 'TeamFlow — Project Manager',
-      slug: 'teamflow-project-manager',
+      name: 'Monthly Close Agent',
+      slug: 'monthly-close-agent',
       price: new Decimal('149.00'),
       stock: 999,
-      description: 'Collaborative project and task management for teams. Kanban boards, Gantt charts, time tracking, and integrations with Slack, GitHub, and Microsoft Teams.',
+      description: 'Month-end made effortless — close your books with confidence. Consolidates daily activity into a verified month-end package with P&L, variance detection, and review-ready reporting.',
       images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&q=80'],
     },
     {
-      name: 'AutoBill — Invoicing & Billing',
-      slug: 'autobill-invoicing',
-      price: new Decimal('99.00'),
+      name: 'Quarterly Close Agent',
+      slug: 'quarterly-close-agent',
+      price: new Decimal('199.00'),
       stock: 999,
-      description: 'Automated invoicing, recurring billing, and payment collection. Send professional invoices, accept online payments, and track overdue accounts effortlessly.',
+      description: 'Quarter-end reporting with controlled precision. KPI dashboards, YTD comparisons, compliance checkpoints, actuals vs budget tracking, and board-ready report packs.',
       images: ['https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80'],
     },
     {
-      name: 'HR Sync — Employee Management',
-      slug: 'hr-sync',
+      name: 'Yearly Close Agent',
+      slug: 'yearly-close-agent',
+      price: new Decimal('299.00'),
+      stock: 999,
+      description: 'Annual close done right — every year, without the chaos. Full-year financial summary, tax preparation package, statutory reporting, prior year comparatives, and year-end rollover.',
+      images: ['https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80'],
+    },
+    {
+      name: 'Managed Secured Workplace',
+      slug: 'managed-secured-workplace',
       price: new Decimal('249.00'),
       stock: 999,
-      description: 'Complete HR software for SMBs. Onboarding workflows, leave management, performance reviews, payroll integration, and org chart builder — all in one solution.',
-      images: ['https://t3.ftcdn.net/jpg/18/17/50/10/240_F_1817501075_2FdGGix5liE919tLtXmPZLTbpq3rrlli.jpg'],
+      description: 'A protected, policy-driven workplace — managed for you end to end. Endpoint device management, identity & access control, data loss prevention, and security baseline hardening.',
+      images: ['https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80'],
+    },
+    {
+      name: 'Managed SOC',
+      slug: 'managed-soc',
+      price: new Decimal('399.00'),
+      stock: 999,
+      description: '24/7 threat detection, triage, and response — without building your own team. Continuous monitoring, alert triage, rapid incident response, and monthly security reports.',
+      images: ['https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=80'],
     },
   ];
 
-    for (const p of products) {
-      await prisma.product.upsert({
-        where: { slug: p.slug },
-        update: { name: p.name, price: p.price, description: p.description, images: p.images, stock: p.stock },
-        create: p,
-      });
-      console.log(`[seed] Product: ${p.name} (€${p.price})`);
-    }
+  for (const p of products) {
+    await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: { name: p.name, price: p.price, description: p.description, images: p.images, stock: p.stock },
+      create: p,
+    });
+    console.log(`[seed] Product: ${p.name} (€${p.price})`);
   }
 
   console.log('[seed] Done.');
