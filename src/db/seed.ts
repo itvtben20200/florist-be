@@ -22,6 +22,20 @@ async function main() {
   });
   console.log(`[seed] Admin: ${admin.email}`);
 
+  // ── Benjamin.Co (dev owner) ─────────────────────────────────────────────────
+  await prisma.user.upsert({
+    where: { email: 'Benjamin.Co@itvt.ph' },
+    update: {},
+    create: {
+      email: 'Benjamin.Co@itvt.ph',
+      passwordHash: '$2a$12$HkSOj59L/CwfzrPDGceKDeZDaFO.sIw38OiA.scZcE9dCwv52qRIq',
+      name: 'Benjamin Co',
+      role: Role.SUPERADMIN,
+      isVerified: true,
+    },
+  });
+  console.log('[seed] Dev owner: Benjamin.Co@itvt.ph');
+
   // ── Sample customer ────────────────────────────────────────────────────────
   const customerHash = await bcrypt.hash('Customer@1234', 12);
   await prisma.user.upsert({
