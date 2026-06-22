@@ -43,6 +43,13 @@ enum CrmSyncStatus {
   FAILED
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  PAUSED
+}
+
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model User {
@@ -59,9 +66,10 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
-  orders    Order[]
-  addresses Address[]
-  sessions  Session[]
+  orders        Order[]
+  addresses     Address[]
+  sessions      Session[]
+  subscriptions Subscription[]
 
   @@index([email])
   @@index([role])
@@ -81,7 +89,8 @@ model Product {
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
-  orderItems OrderItem[]
+  orderItems    OrderItem[]
+  subscriptions Subscription[]
 
   @@index([slug])
   @@index([isActive, createdAt(sort: Desc)])
@@ -105,12 +114,16 @@ model Order {
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
+  subscriptionId String?      @map("subscription_id")
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+
   items      OrderItem[]
   crmSyncLog CrmSyncLog?
 
   @@index([userId])
   @@index([status, createdAt(sort: Desc)])
   @@index([stripeSessionId])
+  @@index([subscriptionId])
   @@map("orders")
 }
 
@@ -167,6 +180,30 @@ model PasswordResetToken {
   @@index([email])
   @@index([expiresAt])
   @@map("password_reset_tokens")
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  userId               String             @map("user_id")
+  user                 User               @relation(fields: [userId], references: [id])
+  productId            String             @map("product_id")
+  product              Product            @relation(fields: [productId], references: [id])
+  stripeSubscriptionId String?            @unique @map("stripe_subscription_id")
+  stripeCustomerId     String?            @map("stripe_customer_id")
+  stripePriceId        String?            @map("stripe_price_id")
+  status               SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime           @map("current_period_start")
+  currentPeriodEnd     DateTime           @map("current_period_end")
+  cancelAtPeriodEnd    Boolean            @default(false) @map("cancel_at_period_end")
+  shippingAddress      Json?              @map("shipping_address")
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+
+  orders Order[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("subscriptions")
 }
 
 model CrmSyncLog {
