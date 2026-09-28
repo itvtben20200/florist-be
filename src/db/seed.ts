@@ -59,7 +59,7 @@ async function main() {
       price: new Decimal('299.00'),
       stock: 999,
       description: 'The complete operating system for your flower shop. Unified order management, real-time inventory, recurring subscriptions, built-in analytics, and team management — all in one platform.',
-      images: ['https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80'],
+      images: ['/solutions/florist%20core1.png'],
     },
     {
       name: 'Daily Close Agent',
@@ -67,7 +67,7 @@ async function main() {
       price: new Decimal('99.00'),
       stock: 999,
       description: 'Automated end-of-day reconciliation — finished before you lock up. Pulls data from POS, payment processors, and online orders to produce a clean daily close report automatically.',
-      images: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80'],
+      images: ['/solutions/Daily%20Close%20Agent1.png'],
     },
     {
       name: 'Monthly Close Agent',
@@ -75,7 +75,7 @@ async function main() {
       price: new Decimal('149.00'),
       stock: 999,
       description: 'Month-end made effortless — close your books with confidence. Consolidates daily activity into a verified month-end package with P&L, variance detection, and review-ready reporting.',
-      images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&q=80'],
+      images: ['/solutions/Monthly%20Close%20Agent1.png'],
     },
     {
       name: 'Quarterly Close Agent',
@@ -83,7 +83,7 @@ async function main() {
       price: new Decimal('199.00'),
       stock: 999,
       description: 'Quarter-end reporting with controlled precision. KPI dashboards, YTD comparisons, compliance checkpoints, actuals vs budget tracking, and board-ready report packs.',
-      images: ['https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80'],
+      images: ['/solutions/Quarterly%20close%20Agent1.png'],
     },
     {
       name: 'Yearly Close Agent',
@@ -91,7 +91,7 @@ async function main() {
       price: new Decimal('299.00'),
       stock: 999,
       description: 'Annual close done right — every year, without the chaos. Full-year financial summary, tax preparation package, statutory reporting, prior year comparatives, and year-end rollover.',
-      images: ['https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80'],
+      images: ['/solutions/Yearly%20close%20Agent1.png'],
     },
     {
       name: 'Managed Secured Workplace',
@@ -99,7 +99,7 @@ async function main() {
       price: new Decimal('249.00'),
       stock: 999,
       description: 'A protected, policy-driven workplace — managed for you end to end. Endpoint device management, identity & access control, data loss prevention, and security baseline hardening.',
-      images: ['https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80'],
+      images: ['/solutions/Manage%20Secure%20Workplace1.png'],
     },
     {
       name: 'Managed SOC',
@@ -107,7 +107,7 @@ async function main() {
       price: new Decimal('399.00'),
       stock: 999,
       description: '24/7 threat detection, triage, and response — without building your own team. Continuous monitoring, alert triage, rapid incident response, and monthly security reports.',
-      images: ['https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=80'],
+      images: ['/solutions/SOC1.png'],
     },
   ];
 
